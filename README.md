@@ -2,6 +2,18 @@
 
 In development.
 
+## Installation
+
+Serve this app locally by running
+
+```bash
+# create virtual environment & install dependencies
+python -m venv venv/
+source venv/bin/activate
+pip install -e .
+weather --version
+```
+
 ## Setup
 
 ```bash
@@ -65,15 +77,3 @@ weather report --help
 ```
 
 to discover all available options.
-
-## Installation
-
-Serve this app locally by running
-
-```bash
-# create virtual environment & install dependencies
-python -m venv venv/
-source venv/bin/activate
-pip install -e .
-weather --version
-```
