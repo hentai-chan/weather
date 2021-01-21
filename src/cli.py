@@ -72,7 +72,7 @@ def config(ctx, token, location, unit_system, reset, list):
         utils.reset_configuration()
 
     if list:
-        click.secho("\nApplication Settings", fg='yellow')
+        click.secho("\nApplication Settings", fg='magenta')
         utils.print_dict('Name', 'Value', config)
 
 @cli.command(help=style("Generate a new weather report.", fg='green'), context_settings=CONTEXT_SETTINGS)
