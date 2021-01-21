@@ -33,9 +33,6 @@ def print_dict(title_left: str, title_right: str, table: dict) -> None:
             click.echo(f"{key}{tabs(key)}{value}")
     click.echo()
 
-def color_string(string: str, color: Fore) -> str:
-    return f"{color}{string}{Style.RESET_ALL}"
-
 def print_on_success(message: str, verbose: bool=True) -> None:
     if verbose:
         click.secho(f"{Fore.GREEN}{'[  OK  ]'.ljust(10, ' ')}{Style.RESET_ALL}{message}")
