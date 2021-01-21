@@ -1,79 +1,105 @@
-# Weather Terminal Application
+<p align="center">
+  <a title="Project Logo">
+    <img height="150" style="margin-top:15px" src="https://raw.githubusercontent.com/hentai-chan/weather/master/weather.svg">
+  </a>
+</p>
 
-In development.
+<h1 align="center">Weather Terminal Application</h1>
 
-## Installation
+Weather is a modern terminal application for reading weather forecasts by harvesting
+the OpenWeather API and features rich configuration options.
 
-Serve this app locally by running
+## Preview
 
-```bash
-# create virtual environment & install dependencies
-python -m venv venv/
-source venv/bin/activate
-pip install -e .
-weather --version
-```
+Coming soon!
 
 ## Setup
 
+Follow along the setup guide below to install and configure this terminal
+application. Using an virtual environment is optional, but recommended. See also
+`requirements.txt` to examine the dependency graph.
+
+<details>
+<summary>Installation</summary>
+
 ```bash
-# access help page for this command
-weather [command] --help
+git clone https://github.com/hentai-chan/weather.git
+cd weather/
+python -m venv venv/
+source venv/bin/activate
+pip install -e .
+# test installation
+weather --version
 ```
 
-Get your API token from [OpenWeather](https://openweathermap.org/) and configure
-your application:
+</details>
+
+## Configuration
+
+Register a new account on <https://openweathermap.org/> to get your API token.
+
+<details>
+<summary>Customize Application Settings</summary>
+
+**Mandatory:** Enter token:
 
 ```bash
 weather config --token=<token>
 ```
 
-Set your default unit system (either `si` or `imperial`):
+**Optional:** Set your default unit system (either `si` or `imperial`):
 
 ```bash
 weather config --unit-system=<system>
 ```
 
-Set your default toponym:
+**Optional:** Set your default location as toponym (e.g. `Rome` or `New York, USA`):
 
 ```bash
-#TODO: this is not implemented yet
 weather config --location=<toponym>
 ```
 
-Review your current configuration:
+**Optional:** Review your submissions:
 
 ```bash
 weather config --list
 ```
 
-Discard all changes:
+**Optional:** Discard all settings:
 
 ```bash
 weather config --reset
 ```
 
+</details>
+
 ## Basic Usage
 
-Get today's weather data from Tokyo:
+<details>
+<summary>Customize Application Settings</summary>
+
+Get today's verbose weather forecast using default settings:
 
 ```bash
-weather report tokyo
+weather report --verbose
 ```
 
-## Advanced Usage
-
-Get tomorrow's weather forecast from tokyo displayed in imperial units:
+Get today's weather forecast for `New York, USA` in imperial units:
 
 ```bash
-#TODO: Implement verbose option
-weather report tokyo --unit-system=imperial --mode=forecast_daily
+weather report --location="New York, USA" --unit-system=imperial
 ```
 
-Hint: run
+Get tomorrow's weather forecast for 12PM:
+
+```bash
+weather report --mode=tomorrow --hour=12
+```
+
+View the help page for this command:
 
 ```bash
 weather report --help
 ```
 
-to discover all available options.
+</details>
