@@ -13,6 +13,7 @@ from pyowm.weatherapi25.weather_manager import WeatherManager
 
 from src import utils
 
+
 UNITSYSTEM = ['IMPERIAL', 'SI']
 
 _temperature_units = {'IMPERIAL': 'fahrenheit', 'SI': 'celsius'}
@@ -41,9 +42,9 @@ def get_temperature_string(temperature: float, unit_system: str='SI') -> str:
     """
     Return a unit-decorated string representation of this temperature in color.
     """
-    temperature = temperature if unit_system.upper() == 'SI' else fahrenheit_to_celsius(temperature)
-    temperature_string = "{:5.2F}{}C".format(temperature, u'\N{DEGREE SIGN}') if unit_system == 'SI' else "{:6.2F}{}F".format(temperature, u'\N{DEGREE SIGN}')
-    return [f"{value}{temperature_string}{Style.RESET_ALL}" for key, value in _color_map.items() if int(temperature) in key][0]
+    temperature = temperature if unit_system == 'SI' else fahrenheit_to_celsius(temperature)
+    temperature_string = "{:5.2F}{}C".format(temperature, u'\N{DEGREE SIGN}') if unit_system.upper() == 'SI' else "{:6.2F}{}F".format(temperature, u'\N{DEGREE SIGN}')
+    return [f"{color}{temperature_string}{Style.RESET_ALL}" for key, color in _color_map.items() if int(temperature) in key][0]
 
 def get_wind_string(speed: float, unit_system: str='SI') -> str:
     """
@@ -55,8 +56,7 @@ def weather_manager(token: str) -> WeatherManager:
     """
     Initialize the OWM constructor and return a weather manager object.
     """
-    owm = pyowm.OWM(token)
-    return owm.weather_manager()
+    return pyowm.OWM(token).weather_manager()
 
 def weather_report(weather: Weather, location: str, unit_system: str) -> dict:
     """
@@ -105,9 +105,9 @@ def formatted_weather_report(token: str, mode: Mode, location: str, unit_system:
     report, dt_ = weather_today(token, location, unit_system) if mode is Mode.Today else weather_forecast(token, location, hour or 15, unit_system)
 
     if verbose:
-        click.secho(f"\n{dt_.strftime('%c')}", fg='yellow')
+        click.secho(f"\n{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d, %Y (%I:%M %p)')}{Fore.MAGENTA} ] {Style.RESET_ALL}", fg='magenta')
         utils.print_dict('Name', 'Value', report)
     else:
-        click.echo(f"{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d')} @ {dt_.strftime('%I:%M %p')}{Fore.MAGENTA} ] {Style.RESET_ALL}", nl=False)
+        click.echo(f"{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d @ %I:%M %p')}{Fore.MAGENTA} ] {Style.RESET_ALL}", nl=False)
         click.echo(f"{report['Temperature (Now)']} ", nl = False)
         click.echo(f"in {report['Location']}")
