@@ -108,6 +108,6 @@ def formatted_weather_report(token: str, mode: Mode, location: str, unit_system:
         click.secho(f"\n{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d, %Y (%I:%M %p)')}{Fore.MAGENTA} ] {Style.RESET_ALL}", fg='magenta')
         utils.print_dict('Name', 'Value', report)
     else:
-        click.echo(f"{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d @ %I:%M %p')}{Fore.MAGENTA} ] {Style.RESET_ALL}", nl=False)
+        click.echo(f"\n{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d @ %I:%M %p')}{Fore.MAGENTA} ] {Style.RESET_ALL}", nl=False)
         click.echo(f"{report['Temperature (Now)']} ", nl = False)
         click.echo(f"in {report['Location']}")
