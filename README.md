@@ -11,7 +11,13 @@ the OpenWeather API and features rich configuration options.
 
 ## Preview
 
-Coming soon!
+Click on this image to open a new window to see the live demo on YouTube.
+
+<p align="center">
+  <a title="Project Logo" href="https://www.youtube.com/watch?v=JsCma_2iiMk">
+    <img height="400" src="https://img.youtube.com/vi/JsCma_2iiMk/0.jpg">
+  </a>
+</p>
 
 ## Setup
 
