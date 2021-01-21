@@ -78,7 +78,7 @@ def config(ctx, token, location, unit_system, reset, list):
 @cli.command(help=style("Generate a new weather report.", fg='green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--location', type=click.STRING, help=style("Configure weather report location.", fg='yellow'))
 @click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set new unit system. Defaults to SI.", fg='yellow'))
-@click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to current (today).", fg='yellow'))
+@click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to today.", fg='yellow'))
 @click.option('--hour', type=Hour(), default=15, help=style("Set hour for tomorrow's forecast. Defaults to 15.", fg='yellow'))
 @click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='yellow'))
 @click.pass_context

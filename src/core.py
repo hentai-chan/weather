@@ -33,7 +33,7 @@ _color_map = {
 @unique
 class Mode(Enum):
     Today = 'today'
-    Forecast = 'forecast'
+    Tomorrow = 'tomorrow'
 
 def fahrenheit_to_celsius(fahrenheit_temp):
     return (fahrenheit_temp - 32) * 5/9
