@@ -27,7 +27,7 @@ def reset_configuration() -> None:
 def print_dict(title_left: str, title_right: str, table: dict) -> None:
     invert = lambda x: -x + (1 + len(max(chain(table.keys(), [title_left]), key=len)) // 8)
     tabs = lambda string: invert(len(string) // 8) * '\t'
-    click.secho(f"\n{title_left}{tabs(title_left)}{title_right}", fg='green')
+    click.secho(f"\n{title_left}{tabs(title_left)}{title_right}", fg='bright_green')
     click.echo(f"{len(title_left) * '-'}{tabs(title_left)}{len(title_right) * '-'}")
     for key, value in table.items():
             click.echo(f"{key}{tabs(key)}{value}")
@@ -35,8 +35,8 @@ def print_dict(title_left: str, title_right: str, table: dict) -> None:
 
 def print_on_success(message: str, verbose: bool=True) -> None:
     if verbose:
-        click.secho(f"{Fore.GREEN}{'[  OK  ]'.ljust(10, ' ')}{Style.RESET_ALL}{message}")
+        click.secho(f"{Style.BRIGHT}{Fore.GREEN}{'[  OK  ]'.ljust(10, ' ')}{Style.RESET_ALL}{message}")
 
 def print_on_error(message: str, verbose: bool=True) -> None:
     if verbose:
-        click.secho(f"{Fore.RED}{'[ ERROR ]'.ljust(10, ' ')}{Style.RESET_ALL}{message}", err=True)
+        click.secho(f"{Style.BRIGHT}{Fore.RED}{'[ ERROR ]'.ljust(10, ' ')}{Style.RESET_ALL}{message}", err=True)

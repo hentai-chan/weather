@@ -105,9 +105,9 @@ def formatted_weather_report(token: str, mode: Mode, location: str, unit_system:
     report, dt_ = weather_today(token, location, unit_system) if mode is Mode.Today else weather_forecast(token, location, hour or 15, unit_system)
 
     if verbose:
-        click.secho(f"\n{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d, %Y (%I:%M %p)')}{Fore.MAGENTA} ] {Style.RESET_ALL}", fg='magenta')
+        click.secho(f"\n{Style.BRIGHT}{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d, %Y (%I:%M %p)')}{Fore.MAGENTA} ] {Style.RESET_ALL}", fg='magenta')
         utils.print_dict('Name', 'Value', report)
     else:
-        click.echo(f"\n{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d @ %I:%M %p')}{Fore.MAGENTA} ] {Style.RESET_ALL}", nl=False)
+        click.echo(f"\n{Style.BRIGHT}{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d @ %I:%M %p')}{Fore.MAGENTA} ] {Style.RESET_ALL}", nl=False)
         click.echo(f"{report['Temperature (Now)']} ", nl = False)
         click.echo(f"in {report['Location']}")

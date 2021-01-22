@@ -39,14 +39,14 @@ class Hour(click.ParamType):
             self.fail(style(f"{value} is not evenly divisible by 3.", fg='red'), param, ctx)
         return hour
 
-@click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='magenta'), context_settings=CONTEXT_SETTINGS)
+@click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='bright_magenta'), context_settings=CONTEXT_SETTINGS)
 @click.version_option(version=__version__, prog_name=package_name, help="Show the version and exit.")
 @click.pass_context
 def cli(ctx):
     ctx.ensure_object(dict)
     ctx.obj['Configuration'] = utils.read_configuration()
 
-@cli.command(help=style("Configure default application settings.", fg='green'), context_settings=CONTEXT_SETTINGS)
+@cli.command(help=style("Configure default application settings.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='yellow'))
 @click.option('--location', type=click.STRING, help=style("Set a default location.", fg='yellow'))
 @click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set a default unit system.", fg='yellow'))
@@ -72,10 +72,10 @@ def config(ctx, token, location, unit_system, reset, list):
         utils.reset_configuration()
 
     if list:
-        click.secho("\nApplication Settings", fg='magenta')
+        click.secho("\nApplication Settings", fg='bright_magenta')
         utils.print_dict('Name', 'Value', config)
 
-@cli.command(help=style("Generate a new weather report.", fg='green'), context_settings=CONTEXT_SETTINGS)
+@cli.command(help=style("Generate a new weather report.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--location', type=click.STRING, help=style("Configure weather report location.", fg='yellow'))
 @click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set new unit system. Defaults to SI.", fg='yellow'))
 @click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to today.", fg='yellow'))
