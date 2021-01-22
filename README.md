@@ -6,12 +6,27 @@
 
 <h1 align="center">Weather Terminal Application</h1>
 
+<p align="center">
+    <a href="https://github.com/hentai-chan/weather" title="Release Version">
+        <img src="https://img.shields.io/badge/Release-1.0.0%20-blue">
+    </a>
+    <a title="Supported Python Versions">
+        <img src="https://img.shields.io/badge/Python-3.8%20-blue">
+    </a>
+    <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" title="License Information" target="_blank" rel="noopener noreferrer">
+        <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
+    </a>
+    <a href="https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/hentai-chan/weather.git" title="Software Heritage Archive" target="_blank" rel="noopener noreferrer">
+        <img src="https://archive.softwareheritage.org/badge/origin/https://github.com/hentai-chan/weather.git/">
+    </a>
+</p>
+
 Weather is a modern terminal application for reading weather forecasts by harvesting
 the OpenWeather API and features rich configuration options.
 
 ## Preview
 
-Click on this image to open a new window to see the live demo on YouTube.
+Click on this image to watch a live demo on YouTube.
 
 <p align="center">
   <a title="Project Logo" href="https://www.youtube.com/watch?v=JsCma_2iiMk">
@@ -82,7 +97,7 @@ weather config --reset
 ## Basic Usage
 
 <details>
-<summary>Customize Application Settings</summary>
+<summary>Command Line Usage</summary>
 
 Get today's verbose weather forecast using default settings:
 
