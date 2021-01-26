@@ -37,7 +37,7 @@ def read_configuration() -> dict:
     """
     Return the content of `package` (a JSON file located in `resource`) as dictionary.
     """
-    with resource_path('src.data', 'config.json') as resource_handler:
+    with resource_path('weather.data', 'config.json') as resource_handler:
         with open(resource_handler, mode='r', encoding='utf-8') as file_handler:
             return json.load(file_handler)
 
@@ -47,7 +47,7 @@ def write_configuration(params: dict) -> None:
     the result of this operation to disk.
     """
     config = read_configuration()
-    with resource_path('src.data', 'config.json') as resource_handler:
+    with resource_path('weather.data', 'config.json') as resource_handler:
         with open(resource_handler, mode='w', encoding='utf-8') as file_handler:
             json.dump({**config, **params}, file_handler)
 
@@ -55,7 +55,7 @@ def reset_configuration() -> None:
     """
     Reset the content of `package` (a JSON file located in `resource`).
     """
-    with resource_path('src.data', 'config.json') as resource_handler:
+    with resource_path('weather.data', 'config.json') as resource_handler:
         with open(resource_handler, mode='w', encoding='utf-8') as file_handler:
             json.dump({}, file_handler)
 
