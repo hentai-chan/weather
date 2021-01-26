@@ -45,10 +45,20 @@ class Hour(click.ParamType):
 
 @click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='bright_magenta'), context_settings=CONTEXT_SETTINGS)
 @click.version_option(version=__version__, prog_name=package_name, help="Show the version and exit.")
+@click.option('--read-log', is_flag=True, default=False, help=style("Read the log file", fg='yellow'))
 @click.pass_context
-def cli(ctx):
+def cli(ctx, read_log):
     ctx.ensure_object(dict)
     ctx.obj['Configuration'] = utils.read_configuration()
+
+    if read_log:
+        click.secho("\nLOG FILE CONTENT\n", fg='bright_magenta')
+        with open(utils.log_file_path(), mode='r', encoding='utf-8') as file_handler:
+            log = file_handler.readlines()
+            for line in log:
+                text = line.strip('\n').split(' - ')
+                click.secho(text[0], fg='yellow', nl=False)
+                click.echo(f" - {text[1]}")
 
 @cli.command(help=style("Configure default application settings.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='yellow'))
