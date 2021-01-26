@@ -11,7 +11,7 @@ from colorama import Fore, Style, init
 from pyowm.weatherapi25.weather import Weather
 from pyowm.weatherapi25.weather_manager import WeatherManager
 
-from src import utils
+from . import utils
 
 
 UNITSYSTEM = ['IMPERIAL', 'SI']

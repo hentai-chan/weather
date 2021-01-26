@@ -10,10 +10,10 @@ try:
 except ImportError:
     pass
 
-import src.core as core
-import src.utils as utils
-from src.__init__ import __version__, package_name
-from src.core import UNITSYSTEM, Mode
+from . import core
+from . import utils
+from .__init__ import __version__, package_name
+from .core import UNITSYSTEM, Mode
 
 CONTEXT_SETTINGS = dict(max_content_width=120)
 
@@ -25,7 +25,9 @@ class Token(click.ParamType):
     def convert(self, value, param, ctx):
         found = re.match(r'[0-9a-f]{32}', value)
         if not found:
-            self.fail(style(f"{value} is not a 32-character hexadecimal string.", fg='red'), param, ctx)
+            error_message = f"{value} is not a 32-character hexadecimal string."
+            utils.logger.error(error_message)
+            self.fail(style(error_message, fg='red'), param, ctx)
         return value
 
 class Hour(click.ParamType):
@@ -36,7 +38,9 @@ class Hour(click.ParamType):
     def convert(self, value, param, ctx):
         hour = int(value)
         if hour % 3 != 0:
-            self.fail(style(f"{value} is not evenly divisible by 3.", fg='red'), param, ctx)
+            error_message = f"{value} is not evenly divisible by 3."
+            utils.logger.error(error_message)
+            self.fail(style(error_message, fg='red'), param, ctx)
         return hour
 
 @click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='bright_magenta'), context_settings=CONTEXT_SETTINGS)
@@ -70,10 +74,12 @@ def config(ctx, token, location, unit_system, reset, list):
 
     if reset:
         utils.reset_configuration()
+        return
 
     if list:
         click.secho("\nApplication Settings", fg='bright_magenta')
         utils.print_dict('Name', 'Value', config)
+        return
 
 @cli.command(help=style("Generate a new weather report.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--location', type=click.STRING, help=style("Configure weather report location.", fg='yellow'))
