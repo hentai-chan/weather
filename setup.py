@@ -44,7 +44,7 @@ setup(
     project_urls={
         'Source Code': "https://github.com/hentai-chan/weather",
         'Bug Reports': "https://github.com/hentai-chan/weather/issues",
-        'Change Log': "https://github.com/hentai-chan/weather/blob/master/CHANGELOG.md"
+        'Changelog': "https://github.com/hentai-chan/weather/blob/master/CHANGELOG.md"
     },
     python_requires=">=%d.%d" % (python_major, python_minor),
     install_requires=packages,
