@@ -16,7 +16,7 @@
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="weather.svg">
   <title
-     id="title1098">Weather Icon</title>
+     id="title1098">Python Weather Icon</title>
   <defs
      id="defs1225">
     <linearGradient
@@ -135,12 +135,12 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="147.60115"
-     inkscape:cy="236.81125"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="377.00347"
+     inkscape:cy="96.026936"
      inkscape:document-units="px"
-     inkscape:current-layer="layer5"
-     showgrid="false"
+     inkscape:current-layer="layer4"
+     showgrid="true"
      units="px"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
@@ -329,7 +329,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Weather Icon</dc:title>
+        <dc:title>Python Weather Icon</dc:title>
         <dc:date>2021/01/21</dc:date>
         <dc:creator>
           <cc:Agent>
@@ -343,6 +343,7 @@
         </dc:rights>
         <cc:license
            rdf:resource="http://www.gnu.org/licenses/gpl-3.0.html" />
+        <dc:source>https://github.com/hentai-chan/weather</dc:source>
       </cc:Work>
     </rdf:RDF>
   </metadata>
