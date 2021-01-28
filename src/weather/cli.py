@@ -4,14 +4,14 @@ import re
 
 import click
 from click import style
+from pyowm.commons.exceptions import UnauthorizedError
 
 try:
     import pretty_errors
 except ImportError:
     pass
 
-from . import core
-from . import utils
+from . import core, utils
 from .__init__ import __version__, package_name
 from .core import UNITSYSTEM, Mode
 
@@ -49,16 +49,10 @@ class Hour(click.ParamType):
 @click.pass_context
 def cli(ctx, read_log):
     ctx.ensure_object(dict)
-    ctx.obj['Configuration'] = utils.read_configuration()
+    ctx.obj['CONFIGURATION'] = utils.read_configuration()
 
     if read_log:
-        click.secho("\nLOG FILE CONTENT\n", fg='bright_magenta')
-        with open(utils.log_file_path(), mode='r', encoding='utf-8') as file_handler:
-            log = file_handler.readlines()
-            for line in log:
-                text = line.strip('\n').split(' - ')
-                click.secho(text[0], fg='yellow', nl=False)
-                click.echo(f" - {text[1]}")
+        utils.read_log()
 
 @cli.command(help=style("Configure default application settings.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='yellow'))
@@ -68,7 +62,7 @@ def cli(ctx, read_log):
 @click.option('--list', is_flag=True, help=style("List all app settings.", fg='yellow'))
 @click.pass_context
 def config(ctx, token, location, unit_system, reset, list):
-    config = ctx.obj['Configuration']
+    config = ctx.obj['CONFIGURATION']
 
     if token:
         config['Token'] = token
@@ -99,8 +93,17 @@ def config(ctx, token, location, unit_system, reset, list):
 @click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='yellow'))
 @click.pass_context
 def report(ctx, location, unit_system, mode, hour, verbose):
-    config = ctx.obj['Configuration']
+    config = ctx.obj['CONFIGURATION']
     token = config['Token']
     unit_system = unit_system or config.get('UnitSystem', 'SI')
     location = location or config.get('Location', 'Tokyo, Japan')
-    core.formatted_weather_report(token, Mode(mode), location, unit_system, verbose, hour)
+    
+    try:
+        core.formatted_weather_report(token, Mode(mode), location, unit_system, verbose, hour)
+    except UnauthorizedError as exception:
+        error_message = f"{exception} (token={token})"
+        utils.print_on_error(error_message)
+        utils.logger.critical(error_message)
+    except Exception as exception:
+        utils.print_on_error("An unexpected error occurred. Please check the log file for more information.")
+        utils.logger.critical(exception)
