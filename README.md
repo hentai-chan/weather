@@ -8,7 +8,7 @@
 
 <p align="center">
     <a href="https://github.com/hentai-chan/weather" title="Release Version">
-        <img src="https://img.shields.io/badge/Release-1.0.0%20-blue">
+        <img src="https://img.shields.io/badge/Release-1.0.2%20-blue">
     </a>
     <a title="Supported Python Versions">
         <img src="https://img.shields.io/badge/Python-3.8%20-blue">
@@ -43,7 +43,7 @@ application. Using an virtual environment is optional, but recommended. See also
 <details>
 <summary>Installation</summary>
 
-```bash
+```cli
 git clone https://github.com/hentai-chan/weather.git
 cd weather/
 python -m venv venv/
@@ -64,31 +64,31 @@ Register a new account on <https://openweathermap.org/> to get your API token.
 
 **Mandatory:** Enter token:
 
-```bash
+```cli
 weather config --token=<token>
 ```
 
 **Optional:** Set your default unit system (either `si` or `imperial`):
 
-```bash
+```cli
 weather config --unit-system=<system>
 ```
 
 **Optional:** Set your default location as toponym (e.g. `Rome` or `New York, USA`):
 
-```bash
+```cli
 weather config --location=<toponym>
 ```
 
 **Optional:** Review your submissions:
 
-```bash
+```cli
 weather config --list
 ```
 
 **Optional:** Discard all settings:
 
-```bash
+```cli
 weather config --reset
 ```
 
@@ -101,26 +101,36 @@ weather config --reset
 
 Get today's verbose weather forecast using default settings:
 
-```bash
+```cli
 weather report --verbose
 ```
 
 Get today's weather forecast for `New York, USA` in imperial units:
 
-```bash
+```cli
 weather report --location="New York, USA" --unit-system=imperial
 ```
 
 Get tomorrow's weather forecast for 12PM:
 
-```bash
+```cli
 weather report --mode=tomorrow --hour=12
 ```
 
 View the help page for this command:
 
-```bash
+```cli
 weather report --help
 ```
 
 </details>
+
+## Report an Issue
+
+Did something went wrong? Copy and paste the information from
+
+```cli
+weather --read-log
+```
+
+to file a new bug report.
