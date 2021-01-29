@@ -1,8 +1,36 @@
 # Changelog
 
-## Version 1.0.2 - Miscellaneous Changes
+## Version 1.1.0 - Storing Weather Reports (29 January 2021)
 
-Improved error handling, reformatted the `read-log` method, set log level to `DEBUG`
+This version adds more refined log-related methods to the CLI:
+
+```cli
+# view log help page
+weather log --help
+```
+
+It also adds a new `--save / --no-save` flag for keeping track of weather reports
+that can be later used to examine change in temperature over a specific period of
+time:
+
+```cli
+weather report --location=tokyo --save
+```
+
+Note that stored weather reports use SI units everywhere. This behavior *cannot*
+be overwritten with the `--unit-system=imperial` option. You've to convert these
+units yourself after the report is generated if you want to use an another unit
+system. This prevents you from accidentally mixing up unit systems during the report
+generation.
+
+```cli
+# access file
+weather report --path
+```
+
+## Version 1.0.2 - Miscellaneous Changes (28 January 2021)
+
+Improved error handling, reformatted the `--read-log` method, set log level to `DEBUG`
 and added a spinner to the weather report generation.
 
 ## Version 1.0.1 - Improved Project Architecture (26 January 2021)
