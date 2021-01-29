@@ -65,6 +65,7 @@ def read_log() -> None:
 
 def get_resource_path(package: str, resource: str) -> Path:
     """
+    Get the path to a `resource` located in `package`.
     """
     with resource_path(package, resource) as resource_handler:
         return Path(resource_handler)
@@ -73,27 +74,24 @@ def read_resource(package: str, resource: str) -> dict:
     """
     Return the content of `package` (a JSON file located in `resource`) as dictionary.
     """
-    with resource_path(package, resource) as resource_handler:
-        with open(resource_handler, mode='r', encoding='utf-8') as file_handler:
-            return json.load(file_handler)
+    with open(get_resource_path(package, resource), mode='r', encoding='utf-8') as file_handler:
+        return json.load(file_handler)
 
-def write_resource(package: str, resource: str, params: dict) -> None:
+def write_resource(resource: str, package: str, params: dict) -> None:
     """
     Merge `params` with the content of `package` (located in `resource`) and write
     the result of this operation to disk.
     """
-    config = read_resource(package, resource)
-    with resource_path(package, resource) as resource_handler:
-        with open(resource_handler, mode='w', encoding='utf-8') as file_handler:
-            json.dump({**config, **params}, file_handler)
+    config = read_resource(resource, package)
+    with open(get_resource_path(package, resource), mode='w', encoding='utf-8') as file_handler:
+        json.dump({**config, **params}, file_handler)
 
-def reset_resource(package: str, resource: str) -> None:
+def reset_resource(resource: str, package: str) -> None:
     """
     Reset the content of `package` (a JSON file located in `resource`).
     """
-    with resource_path(package, resource) as resource_handler:
-        with open(resource_handler, mode='w', encoding='utf-8') as file_handler:
-            json.dump({}, file_handler)
+    with open(get_resource_path(package, resource), mode='w', encoding='utf-8') as file_handler:
+        json.dump({}, file_handler)
 
 #endregion
 
