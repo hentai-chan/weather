@@ -44,15 +44,28 @@ class Hour(click.ParamType):
         return hour
 
 @click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='bright_magenta'), context_settings=CONTEXT_SETTINGS)
-@click.version_option(version=__version__, prog_name=package_name, help="Show the version and exit.")
-@click.option('--read-log', is_flag=True, default=False, help=style("Read the log file", fg='yellow'))
+@click.version_option(version=__version__, prog_name=package_name, help=style("Show the version and exit.", fg='yellow'))
 @click.pass_context
-def cli(ctx, read_log):
+def cli(ctx):
     ctx.ensure_object(dict)
-    ctx.obj['CONFIGURATION'] = utils.read_configuration()
+    ctx.obj['CONFIGURATION'] = utils.read_resource('weather.data', 'config.json')
 
-    if read_log:
+@cli.command(help=style("Perform log file operations.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
+@click.option('--read', is_flag=True, default=False, help=style("Read the log file.", fg='yellow'))
+@click.option('--reset', is_flag=True, default=False, help=style("Reset all log file entries", fg='yellow'))
+@click.option('--path', is_flag=True, default=False, help=style("Get the log file path.", fg='yellow'))
+def log(read, reset, path):
+    if read:
         utils.read_log()
+        return
+
+    if reset:
+        open(utils.log_file_path(target_dir=package_name), mode='w', encoding='utf-8').close()
+        return
+
+    if path:
+        click.echo(utils.log_file_path(target_dir=package_name))
+        return
 
 @cli.command(help=style("Configure default application settings.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='yellow'))
@@ -66,18 +79,18 @@ def config(ctx, token, location, unit_system, reset, list):
 
     if token:
         config['Token'] = token
-        utils.write_configuration(config)
+        utils.write_resource('weather.data', 'config.json', config)
     
     if location:
         config['Location'] = location
-        utils.write_configuration(config)
+        utils.write_resource('weather.data', 'config.json', config)
 
     if unit_system:
         config['UnitSystem'] = unit_system.lower()
-        utils.write_configuration(config)
+        utils.write_resource('weather.data', 'config.json', config)
 
     if reset:
-        utils.reset_configuration()
+        utils.reset_resource('weather.data', 'config.json')
         return
 
     if list:
@@ -90,16 +103,26 @@ def config(ctx, token, location, unit_system, reset, list):
 @click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set new unit system. Defaults to SI.", fg='yellow'))
 @click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to today.", fg='yellow'))
 @click.option('--hour', type=Hour(), default=15, help=style("Set hour for tomorrow's forecast. Defaults to 15.", fg='yellow'))
+@click.option('--save/--no-save', is_flag=True, default=False, help=style("Store results to disk.", fg='yellow'))
+@click.option('--path', is_flag=True, default=False, help=style("Get the weather report path.", fg='yellow'))
 @click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='yellow'))
 @click.pass_context
-def report(ctx, location, unit_system, mode, hour, verbose):
+def report(ctx, location, unit_system, mode, hour, save, path, verbose):
     config = ctx.obj['CONFIGURATION']
-    token = config['Token']
-    unit_system = unit_system or config.get('UnitSystem', 'SI')
-    location = location or config.get('Location', 'Tokyo, Japan')
+
+    if path:
+        click.echo(utils.get_resource_path('weather.data', 'weather.json'))
+        return
     
     try:
-        core.formatted_weather_report(token, Mode(mode), location, unit_system, verbose, hour)
+        token = config['Token']
+        unit_system = unit_system or config.get('UnitSystem', 'SI')
+        location = location or config.get('Location', 'Tokyo, Japan')
+        core.formatted_weather_report(token, Mode(mode), location, unit_system, save, verbose, hour)
+    except KeyError as exception:
+        warning_message = f"Key Error: {exception}"
+        utils.print_on_warning(warning_message)
+        utils.logger.warning(warning_message)
     except UnauthorizedError as exception:
         error_message = f"{exception} (token={token})"
         utils.print_on_error(error_message)
