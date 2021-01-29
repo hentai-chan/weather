@@ -7,7 +7,7 @@ from typing import Tuple
 
 import click
 import pyowm
-from colorama import Fore, Style, init
+from colorama import Fore, Style
 from pyowm.weatherapi25.weather import Weather
 from pyowm.weatherapi25.weather_manager import WeatherManager
 from rich.console import Console
@@ -58,9 +58,25 @@ def weather_manager(token: str) -> WeatherManager:
     """
     return pyowm.OWM(token).weather_manager()
 
+def raw_weather_report(weather: Weather, location: str, unit_system: str) -> dict:
+    """
+    Build a raw weather report feed dictionary. This method is useful for storing
+    persistent data because the values contain no ANSI escape sequences or units.
+    """
+    temperature = weather.temperature(_temperature_units[unit_system.upper()])
+    return {
+        'Location': location,
+        'Temperature (Min)': temperature['temp_min'],
+        'Temperature (Now)': temperature['temp'],
+        'Temperature (Max)': temperature['temp_max'],
+        'Wind Speed': weather.wind(_speed_units[unit_system.upper()])['speed'],
+        'Humidity': weather.humidity,
+        'Cloud Coverage': weather.clouds
+    }
+
 def weather_report(weather: Weather, location: str, unit_system: str) -> dict:
     """
-    Build a raw weather report feed dictionary.
+    Build a color-formatted weather report feed dictionary.
     """
     temperature = weather.temperature(_temperature_units[unit_system.upper()])
     padded_percentage = lambda value: "{:5}%".format(value)
@@ -98,12 +114,22 @@ def weather_forecast(token: str, location: str, hour: int, unit_system: str='SI'
         if (ref_time.day > tomorrow.day and ref_time.hour == hour):
             return (weather_report(weather, forecaster.forecast.location.name, unit_system), ref_time)
 
-def formatted_weather_report(token: str, mode: Mode, location: str, unit_system: str, verbose: bool=False, hour: int=None) -> None:
+def formatted_weather_report(token: str, mode: Mode, location: str, unit_system: str, save: bool, verbose: bool=False, hour: int=None) -> None:
     """
     Build a formatted weather report and print the result to the terminal.
     """
     with Console().status('Reading weather report . . .', spinner='dots3') as _:
         report, dt_ = weather_today(token, location, unit_system) if mode is Mode.Today else weather_forecast(token, location, hour or 15, unit_system)
+
+    if save:
+        with Console().status('Storing weather report . . .', spinner='dots3') as _:
+            observation = weather_manager(token).weather_at_place(location)
+            weather_history = utils.read_resource('weather.data', 'weather.json')
+            tmp = weather_history.get(location, [])
+            tmp.append(raw_weather_report(observation.weather, observation.location.name, 'SI'))
+            weather_history[location] = tmp
+            utils.write_resource('weather.data', 'weather.json', weather_history)
+            utils.logger.info(f'Stored weather report for {location} today.')
 
     if verbose:
         click.secho(f"\n{Style.BRIGHT}{Fore.MAGENTA}[ {Style.RESET_ALL}{dt_.strftime('%B %d, %Y (%I:%M %p)')}{Fore.MAGENTA} ] {Style.RESET_ALL}", fg='magenta')
