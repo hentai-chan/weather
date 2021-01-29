@@ -59,32 +59,39 @@ def read_log() -> None:
             timestamp, levelname, name, message = entry[0], entry[1], entry[2], entry[3]
             click.secho(f"[{timestamp}] ", fg='cyan', nl=False)
             click.secho(f"@{name} ", nl=False)
-            click.secho(f"{levelname}\t", fg=color_map[levelname], blink=(levelname=='CRITICAL'), nl=False)
+            tabs = '\t\t' if levelname == 'INFO' else '\t'
+            click.secho(f"{levelname}{tabs}", fg=color_map[levelname], blink=(levelname=='CRITICAL'), nl=False)
             click.secho(message)
 
-def read_configuration() -> dict:
+def get_resource_path(package: str, resource: str) -> Path:
+    """
+    """
+    with resource_path(package, resource) as resource_handler:
+        return Path(resource_handler)
+
+def read_resource(package: str, resource: str) -> dict:
     """
     Return the content of `package` (a JSON file located in `resource`) as dictionary.
     """
-    with resource_path('weather.data', 'config.json') as resource_handler:
+    with resource_path(package, resource) as resource_handler:
         with open(resource_handler, mode='r', encoding='utf-8') as file_handler:
             return json.load(file_handler)
 
-def write_configuration(params: dict) -> None:
+def write_resource(package: str, resource: str, params: dict) -> None:
     """
     Merge `params` with the content of `package` (located in `resource`) and write
     the result of this operation to disk.
     """
-    config = read_configuration()
-    with resource_path('weather.data', 'config.json') as resource_handler:
+    config = read_resource(package, resource)
+    with resource_path(package, resource) as resource_handler:
         with open(resource_handler, mode='w', encoding='utf-8') as file_handler:
             json.dump({**config, **params}, file_handler)
 
-def reset_configuration() -> None:
+def reset_resource(package: str, resource: str) -> None:
     """
     Reset the content of `package` (a JSON file located in `resource`).
     """
-    with resource_path('weather.data', 'config.json') as resource_handler:
+    with resource_path(package, resource) as resource_handler:
         with open(resource_handler, mode='w', encoding='utf-8') as file_handler:
             json.dump({}, file_handler)
 
