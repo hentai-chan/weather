@@ -8,7 +8,7 @@
 
 <p align="center">
     <a href="https://github.com/hentai-chan/weather" title="Release Version">
-        <img src="https://img.shields.io/badge/Release-1.0.2%20-blue">
+        <img src="https://img.shields.io/badge/Release-1.1.0%20-blue">
     </a>
     <a title="Supported Python Versions">
         <img src="https://img.shields.io/badge/Python-3.8%20-blue">
@@ -111,6 +111,12 @@ Get today's weather forecast for `New York, USA` in imperial units:
 weather report --location="New York, USA" --unit-system=imperial
 ```
 
+Store today's weather report.
+
+```cli
+weather report --save
+```
+
 Get tomorrow's weather forecast for 12PM:
 
 ```cli
@@ -130,7 +136,7 @@ weather report --help
 Did something went wrong? Copy and paste the information from
 
 ```cli
-weather --read-log
+weather log --read
 ```
 
 to file a new bug report.
