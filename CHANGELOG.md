@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 1.2.0 - Implement More Report Options (01 January 2021)
+
+This version implements two more options to the report function:
+
+```cli
+# clears file produced by the '--save' flag
+weather report --reset
+# read all stored weather reports
+weather report --read
+```
+
+Note that this release also fixes a bug which rendered access to resource files,
+and by extension the whole application, useless.
+
 ## Version 1.1.0 - Storing Weather Reports (29 January 2021)
 
 This version adds more refined log-related methods to the CLI:
