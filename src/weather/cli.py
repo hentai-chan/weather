@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re
+from pprint import pprint
 
 import click
 from click import style
@@ -49,6 +50,7 @@ class Hour(click.ParamType):
 def cli(ctx):
     ctx.ensure_object(dict)
     ctx.obj['CONFIGURATION'] = utils.read_resource('weather.data', 'config.json')
+    ctx.obj['WEATHER'] = utils.read_resource('weather.data', 'weather.json')
 
 @cli.command(help=style("Perform log file operations.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
 @click.option('--read', is_flag=True, default=False, help=style("Read the log file.", fg='yellow'))
@@ -71,10 +73,11 @@ def log(read, reset, path):
 @click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='yellow'))
 @click.option('--location', type=click.STRING, help=style("Set a default location.", fg='yellow'))
 @click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set a default unit system.", fg='yellow'))
+@click.option('--path', is_flag=True, default=False, help=style("Get the config file path.", fg='yellow'))
 @click.option('--reset', is_flag=True, help=style("Reset all configurations.", fg='yellow'))
 @click.option('--list', is_flag=True, help=style("List all app settings.", fg='yellow'))
 @click.pass_context
-def config(ctx, token, location, unit_system, reset, list):
+def config(ctx, token, location, unit_system, path, reset, list):
     config = ctx.obj['CONFIGURATION']
 
     if token:
@@ -88,6 +91,10 @@ def config(ctx, token, location, unit_system, reset, list):
     if unit_system:
         config['UnitSystem'] = unit_system.lower()
         utils.write_resource('weather.data', 'config.json', config)
+
+    if path:
+        click.echo(utils.get_resource_path('weather.data', 'config.json'))
+        return
 
     if reset:
         utils.reset_resource('weather.data', 'config.json')
@@ -105,13 +112,25 @@ def config(ctx, token, location, unit_system, reset, list):
 @click.option('--hour', type=Hour(), default=15, help=style("Set hour for tomorrow's forecast. Defaults to 15.", fg='yellow'))
 @click.option('--save/--no-save', is_flag=True, default=False, help=style("Store results to disk.", fg='yellow'))
 @click.option('--path', is_flag=True, default=False, help=style("Get the weather report path.", fg='yellow'))
+@click.option('--reset', is_flag=True, help=style("Wipe out your weather report file.", fg='yellow'))
+@click.option('--read', is_flag=True, default=False, help=style("Read your weather report file.", fg='yellow'))
 @click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='yellow'))
 @click.pass_context
-def report(ctx, location, unit_system, mode, hour, save, path, verbose):
+def report(ctx, location, unit_system, mode, hour, save, path, reset, read, verbose):
     config = ctx.obj['CONFIGURATION']
+    weather_report_file = ctx.obj['WEATHER']
+    weather_report_path = utils.get_resource_path('weather.data', 'weather.json')
 
     if path:
-        click.echo(utils.get_resource_path('weather.data', 'weather.json'))
+        click.echo(weather_report_path)
+        return
+
+    if reset:
+        utils.reset_resource('weather.data', 'weather.json')
+        return
+
+    if read:
+        pprint(weather_report_file, indent=2)
         return
     
     try:
