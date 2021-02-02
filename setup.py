@@ -13,9 +13,9 @@ with open("src/weather/__init__.py", encoding='utf-8') as file_handler:
     python_minor = int(re.search(r'python_minor = "(.*?)"', lines).group(1))
 
 try:
-    assert (sys.version_info.major == python_major and sys.version_info.minor <= python_minor)
+    assert sys.version_info >= (int(python_major), int(python_minor))
 except AssertionError:
-    raise RuntimeError("\033[91mPython Version %d.%d+ is required!\033[0m" % (python_major, python_minor))
+    raise RuntimeError("\033[91mWeather requires Python %s.%s+ (You have Python %s)\033[0m" % (python_major, python_minor, sys.version))
 
 print("reading dependency file")
 
