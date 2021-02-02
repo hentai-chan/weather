@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.2.1 - Bug Fix (02 January 2021)
+
+Alright, this one is a little embarrassing: In previous versions of `weather`
+it escaped my attention that the `get_temperature_string` in `core.py`
+malfunctioned due to an conversion error from kelvin to fahrenheit.
+
 ## Version 1.2.0 - Implement More Report Options (01 January 2021)
 
 This version implements two more options to the report function:
