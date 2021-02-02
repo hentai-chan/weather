@@ -14,6 +14,12 @@ from rich.console import Console
 
 from . import utils
 
+
+@unique
+class Mode(Enum):
+    Today = 'today'
+    Tomorrow = 'tomorrow'
+
 UNITSYSTEM = ['IMPERIAL', 'SI']
 
 _temperature_units = {'IMPERIAL': 'fahrenheit', 'SI': 'celsius'}
@@ -30,19 +36,11 @@ _color_map = {
     range(30, 99): f"{Style.BRIGHT}{Fore.RED}",
 }
 
-@unique
-class Mode(Enum):
-    Today = 'today'
-    Tomorrow = 'tomorrow'
-
-def fahrenheit_to_celsius(fahrenheit_temp):
-    return (fahrenheit_temp - 32) * 5/9
-
 def get_temperature_string(temperature: float, unit_system: str='SI') -> str:
     """
     Return a unit-decorated string representation of this temperature in color.
     """
-    temperature = temperature if unit_system == 'SI' else fahrenheit_to_celsius(temperature)
+    temperature = temperature if unit_system == 'SI' else temperature - 273.15
     temperature_string = "{:5.2F}{}C".format(temperature, u'\N{DEGREE SIGN}') if unit_system.upper() == 'SI' else "{:6.2F}{}F".format(temperature, u'\N{DEGREE SIGN}')
     return [f"{color}{temperature_string}{Style.RESET_ALL}" for key, color in _color_map.items() if int(temperature) in key][0]
 
