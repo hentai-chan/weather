@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.2 - Bug Fix (03 January 2021)
+
+Resolves an issue that broke the unit system flag in the configuration file and
+universally maps the temperatures to the color dictionary.
+
 ## Version 1.2.1 - Bug Fix (02 January 2021)
 
 Alright, this one is a little embarrassing: In previous versions of `weather`
