@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.3 - Add Epos to Save File (03 January 2021)
+
+This is getting ridiculous, how could I forget to add a timestamp to the weather
+report?
+
 ## Version 1.2.2 - Bug Fix (03 January 2021)
 
 Resolves an issue that broke the unit system flag in the configuration file and
