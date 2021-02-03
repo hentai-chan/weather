@@ -40,9 +40,10 @@ def get_temperature_string(temperature: float, unit_system: str='SI') -> str:
     """
     Return a unit-decorated string representation of this temperature in color.
     """
-    temperature = temperature if unit_system == 'SI' else temperature - 273.15
+    # convert temperature to celsius for reutilizing the color map definition
+    ensure_celsius = lambda temperature: (temperature - 32) / 1.8 if unit_system.upper() == 'IMPERIAL' else temperature
     temperature_string = "{:5.2F}{}C".format(temperature, u'\N{DEGREE SIGN}') if unit_system.upper() == 'SI' else "{:6.2F}{}F".format(temperature, u'\N{DEGREE SIGN}')
-    return [f"{color}{temperature_string}{Style.RESET_ALL}" for key, color in _color_map.items() if int(temperature) in key][0]
+    return [f"{color}{temperature_string}{Style.RESET_ALL}" for key, color in _color_map.items() if int(ensure_celsius(temperature)) in key][0]
 
 def get_wind_string(speed: float, unit_system: str='SI') -> str:
     """
