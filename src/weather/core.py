@@ -64,6 +64,7 @@ def raw_weather_report(weather: Weather, location: str, unit_system: str) -> dic
     """
     temperature = weather.temperature(_temperature_units[unit_system.upper()])
     return {
+        'DateTime': weather.ref_time,
         'Location': location,
         'Temperature (Min)': temperature['temp_min'],
         'Temperature (Now)': temperature['temp'],
