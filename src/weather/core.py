@@ -10,7 +10,6 @@ import pyowm
 from colorama import Fore, Style
 from pyowm.weatherapi25.weather import Weather
 from pyowm.weatherapi25.weather_manager import WeatherManager
-from rich.console import Console
 
 from . import utils
 
@@ -118,11 +117,11 @@ def formatted_weather_report(token: str, mode: Mode, location: str, unit_system:
     """
     Build a formatted weather report and print the result to the terminal.
     """
-    with Console().status('Reading weather report . . .', spinner='dots3') as _:
+    with utils.CONSOLE.status('Reading weather report . . .', spinner='dots3') as _:
         report, dt_ = weather_today(token, location, unit_system) if mode is Mode.Today else weather_forecast(token, location, hour or 15, unit_system)
 
     if save:
-        with Console().status('Storing weather report . . .', spinner='dots3') as _:
+        with utils.CONSOLE.status('Storing weather report . . .', spinner='dots3') as _:
             observation = weather_manager(token).weather_at_place(location)
             weather_history = utils.read_resource('weather.data', 'weather.json')
             tmp = weather_history.get(location, [])
