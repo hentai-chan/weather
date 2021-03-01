@@ -45,7 +45,7 @@ class Hour(click.ParamType):
         return hour
 
 @click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='bright_magenta'), context_settings=CONTEXT_SETTINGS)
-@click.version_option(version=__version__, prog_name=package_name, help=style("Show the version and exit.", fg='yellow'))
+@click.version_option(version=__version__, prog_name=package_name, help=style("Show the version and exit.", fg='bright_yellow'))
 @click.pass_context
 def cli(ctx):
     ctx.ensure_object(dict)
@@ -53,9 +53,9 @@ def cli(ctx):
     ctx.obj['WEATHER'] = utils.read_resource('weather.data', 'weather.json')
 
 @cli.command(help=style("Perform log file operations.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
-@click.option('--read', is_flag=True, default=False, help=style("Read the log file.", fg='yellow'))
-@click.option('--reset', is_flag=True, default=False, help=style("Reset all log file entries", fg='yellow'))
-@click.option('--path', is_flag=True, default=False, help=style("Get the log file path.", fg='yellow'))
+@click.option('--read', is_flag=True, default=False, help=style("Read the log file.", fg='bright_yellow'))
+@click.option('--reset', is_flag=True, default=False, help=style("Reset all log file entries", fg='bright_yellow'))
+@click.option('--path', is_flag=True, default=False, help=style("Get the log file path.", fg='bright_yellow'))
 def log(read, reset, path):
     if read:
         utils.read_log()
@@ -70,12 +70,12 @@ def log(read, reset, path):
         return
 
 @cli.command(help=style("Configure default application settings.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
-@click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='yellow'))
-@click.option('--location', type=click.STRING, help=style("Set a default location.", fg='yellow'))
-@click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set a default unit system.", fg='yellow'))
-@click.option('--path', is_flag=True, default=False, help=style("Get the config file path.", fg='yellow'))
-@click.option('--reset', is_flag=True, help=style("Reset all configurations.", fg='yellow'))
-@click.option('--list', is_flag=True, help=style("List all app settings.", fg='yellow'))
+@click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='bright_yellow'))
+@click.option('--location', type=click.STRING, help=style("Set a default location.", fg='bright_yellow'))
+@click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set a default unit system.", fg='bright_yellow'))
+@click.option('--path', is_flag=True, default=False, help=style("Get the config file path.", fg='bright_yellow'))
+@click.option('--reset', is_flag=True, help=style("Reset all configurations.", fg='bright_yellow'))
+@click.option('--list', is_flag=True, help=style("List all app settings.", fg='bright_yellow'))
 @click.pass_context
 def config(ctx, token, location, unit_system, path, reset, list):
     config = ctx.obj['CONFIGURATION']
@@ -106,15 +106,15 @@ def config(ctx, token, location, unit_system, path, reset, list):
         return
 
 @cli.command(help=style("Generate a new weather report.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
-@click.option('--location', type=click.STRING, help=style("Configure weather report location.", fg='yellow'))
-@click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set new unit system. Defaults to SI.", fg='yellow'))
-@click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to today.", fg='yellow'))
-@click.option('--hour', type=Hour(), default=15, help=style("Set hour for tomorrow's forecast. Defaults to 15.", fg='yellow'))
-@click.option('--save/--no-save', is_flag=True, default=False, help=style("Store results to disk.", fg='yellow'))
-@click.option('--path', is_flag=True, default=False, help=style("Get the weather report path.", fg='yellow'))
-@click.option('--reset', is_flag=True, help=style("Wipe out your weather report file.", fg='yellow'))
-@click.option('--read', is_flag=True, default=False, help=style("Read your weather report file.", fg='yellow'))
-@click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='yellow'))
+@click.option('--location', type=click.STRING, help=style("Configure weather report location.", fg='bright_yellow'))
+@click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set new unit system. Defaults to SI.", fg='bright_yellow'))
+@click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to today.", fg='bright_yellow'))
+@click.option('--hour', type=Hour(), default=15, help=style("Set hour for tomorrow's forecast. Defaults to 15.", fg='bright_yellow'))
+@click.option('--save/--no-save', is_flag=True, default=False, help=style("Store results to disk.", fg='bright_yellow'))
+@click.option('--path', is_flag=True, default=False, help=style("Get the weather report path.", fg='bright_yellow'))
+@click.option('--reset', is_flag=True, help=style("Wipe out your weather report file.", fg='bright_yellow'))
+@click.option('--read', is_flag=True, default=False, help=style("Read your weather report file.", fg='bright_yellow'))
+@click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='bright_yellow'))
 @click.pass_context
 def report(ctx, location, unit_system, mode, hour, save, path, reset, read, verbose):
     config = ctx.obj['CONFIGURATION']
