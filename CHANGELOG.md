@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.4 - Improve Log Utilities (01 March 2021)
+
+Makes the `weather log --read` terminal output prettier using rich tables and
+fixes potential permission errors with respect to the log path for non-root users.
+
 ## Version 1.2.3 - Add Epos to Save File (03 January 2021)
 
 This is getting ridiculous, how could I forget to add a timestamp to the weather
