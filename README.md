@@ -43,14 +43,21 @@ application. Using an virtual environment is optional, but recommended. See also
 <details>
 <summary>Installation</summary>
 
+[pipx](https://pypa.github.io/pipx/) is the recommended way to install
+Python applications in an isolated environment:
+
+```cli
+pipx install git+https://github.com/hentai-chan/weather.git
+```
+
+Fire up a debug build in `./venv`:
+
 ```cli
 git clone https://github.com/hentai-chan/weather.git
 cd weather/
 python -m venv venv/
 source venv/bin/activate
 pip install -e .
-# test installation
-weather --version
 ```
 
 </details>
