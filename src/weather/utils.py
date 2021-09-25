@@ -50,7 +50,7 @@ logger.addHandler(file_handler)
 
 def read_json_file(filename: Union[str, Path]) -> dict:
     """
-    TODO: test this method and write doc string
+    Read `filename` and, if this file is empty, return an empty dictionary in its place.
     """
     with open(get_resource_path(filename), mode='r', encoding='utf-8') as file_handler:
         try:
@@ -60,7 +60,7 @@ def read_json_file(filename: Union[str, Path]) -> dict:
 
 def write_json_file(filename: Union[str, Path], params: dict) -> None:
     """
-    TODO: test this method and write doc string
+    Save the data in `params` as a JSON file by creating an union of pre-existing data (if any).
     """
     config = read_json_file(filename)
     with open(get_resource_path(filename), mode='w', encoding='utf-8') as file_handler:
@@ -75,7 +75,6 @@ def reset_file(filename: Union[str, Path]) -> None:
 
 #region terminal formatting
 
-# TODO: break free from colorama dependency
 def print_dict(title_left: str, title_right: str, table: dict) -> None:
     """
     Print a flat dictionary as table with two column titles.
@@ -90,7 +89,6 @@ def print_dict(title_left: str, title_right: str, table: dict) -> None:
         print(f"{key}{tabs(key)}{value}")
     print()
 
-# TODO: break free from colorama dependency
 def print_on_success(message: str, verbose: bool=True) -> None:
     """
     Print a formatted success message if verbose is enabled.
@@ -98,7 +96,6 @@ def print_on_success(message: str, verbose: bool=True) -> None:
     if verbose:
         print(f"{BRIGHT}{GREEN}{'[  OK  ]'.ljust(12, ' ')}{RESET_ALL}{message}")
 
-# TODO: break free from colorama dependency
 def print_on_warning(message: str, verbose: bool=True) -> None:
     """
     Print a formatted warning message if verbose is enabled.
@@ -106,7 +103,6 @@ def print_on_warning(message: str, verbose: bool=True) -> None:
     if verbose:
         print(f"{BRIGHT}{YELLOW}{'[ WARNING ]'.ljust(12, ' ')}{RESET_ALL}{message}")
 
-# TODO: break free from colorama dependency
 def print_on_error(message: str, verbose: bool=True) -> None:
     """
     Print a formatted error message if verbose is enabled.
@@ -120,4 +116,4 @@ def clear():
     """
     os.system('cls' if platform.system() == 'Windows' else 'clear')
 
-#endregion
+#endregion terminal formatting

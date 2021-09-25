@@ -59,9 +59,8 @@ UNITSYSTEM = [us.name for us in UnitSystem]
 
 class WeatherReport(object):
     """
-    TODO: write doc strings
+    Defines an interposed interface for the new PyOWM API.
     """
-    # TODO: use ansi escape sequences
     _temperature_units: dict={'IMPERIAL': 'fahrenheit', 'SI': 'celsius'}
     _speed_units: dict={'IMPERIAL': 'miles_hour', 'SI': 'meters_sec'}
     _color_map = {

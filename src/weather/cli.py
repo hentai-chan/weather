@@ -143,6 +143,7 @@ def cli():
                 print(f"{BRIGHT}{MAGENTA}[ {RESET_ALL}{data['Date'].strftime('%B %d @ %I:%M %p')}{BRIGHT}{MAGENTA} ]{RESET_ALL} {data['Temperature (Now)']} in {data['Location']}")
 
             if args.save:
+                #TODO: convert JSON data to CSV for export
                 raise NotImplementedError()
 
         except KeyError as key_error:
