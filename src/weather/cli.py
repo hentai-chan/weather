@@ -1,151 +1,164 @@
 #!/usr/bin/env python3
 
+import argparse
 import re
-from pprint import pprint
+from collections import namedtuple
+from typing import Optional
 
-import click
-from click import style
 from pyowm.commons.exceptions import UnauthorizedError
-
-try:
-    import pretty_errors
-except ImportError:
-    pass
 
 from . import core, utils
 from .__init__ import __version__, package_name
-from .core import UNITSYSTEM, Mode
+from .config import (BRIGHT, CONFIGFILE, GREEN, LOGFILE, MAGENTA, REPORTFILE,
+                     RESET_ALL)
+from .core import Mode, UnitSystem
 
-CONTEXT_SETTINGS = dict(max_content_width=120)
+# NOTE: 70c5577aa5cf8ce1dfb082e685e49944
+# NOTE: https://gist.github.com/mikecharles/9ed3082b10d77d658743
 
-class Token(click.ParamType):
-    """
-    Custom TokenParamType validator.
-    """
-    name = 'token'
-    def convert(self, value, param, ctx):
-        found = re.match(r'[0-9a-f]{32}', value)
-        if not found:
-            error_message = f"{value} is not a 32-character hexadecimal string."
-            utils.logger.error(error_message)
-            self.fail(style(error_message, fg='red'), param, ctx)
-        return value
+#region argparse pseudo type checking
 
-class Hour(click.ParamType):
-    """
-    Custom Hour validator.
-    """
-    name = 'hour'
-    def convert(self, value, param, ctx):
-        hour = int(value)
-        if hour % 3 != 0:
-            error_message = f"{value} is not evenly divisible by 3."
-            utils.logger.error(error_message)
-            self.fail(style(error_message, fg='red'), param, ctx)
-        return hour
+def validate_token(token: str) -> Optional[str]:
+    if not re.match(r'[0-9a-f]{32}', token):
+        err_msg = "It looks like you've entered an invalid API token. This incident will be reported."
+        utils.logger.error(err_msg)
+        utils.print_on_error(err_msg)
+    else:
+        return token
 
-@click.group(invoke_without_command=True, help=style("Simple script for reading weather data in the terminal.", fg='bright_magenta'), context_settings=CONTEXT_SETTINGS)
-@click.version_option(version=__version__, prog_name=package_name, help=style("Show the version and exit.", fg='bright_yellow'))
-@click.pass_context
-def cli(ctx):
-    ctx.ensure_object(dict)
-    ctx.obj['CONFIGURATION'] = utils.read_resource('weather.data', 'config.json')
-    ctx.obj['WEATHER'] = utils.read_resource('weather.data', 'weather.json')
+def validate_hour(hour: str) -> Optional[str]:
+    if not hour.isnumeric() and int(hour) % 3 != 0:
+        err_msg = "%s is not a valid number or evenly divisible by 3." % hour
+        utils.logger.error(err_msg)
+        utils.print_on_error(err_msg)
+    else:
+        return int(hour)
 
-@cli.command(help=style("Perform log file operations.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
-@click.option('--read', is_flag=True, default=False, help=style("Read the log file.", fg='bright_yellow'))
-@click.option('--reset', is_flag=True, default=False, help=style("Reset all log file entries", fg='bright_yellow'))
-@click.option('--path', is_flag=True, default=False, help=style("Get the log file path.", fg='bright_yellow'))
-def log(read, reset, path):
-    if read:
-        utils.read_log()
-        return
+#endregion
 
-    if reset:
-        open(utils.log_file_path(target_dir=package_name), mode='w', encoding='utf-8').close()
-        return
+def cli():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version=f"%(prog)s {__version__}")
+    parser.add_argument('--verbose', default=False, action='store_true', help="increase output verbosity")
+    parser.add_argument('--no-verbose', dest='verbose', action='store_false', help="run commands silently")
 
-    if path:
-        click.echo(utils.log_file_path(target_dir=package_name))
-        return
+    subparser = parser.add_subparsers(dest='command')
 
-@cli.command(help=style("Configure default application settings.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
-@click.option('--token', type=Token(), help=style("Set OpenWeather API key.", fg='bright_yellow'))
-@click.option('--location', type=click.STRING, help=style("Set a default location.", fg='bright_yellow'))
-@click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set a default unit system.", fg='bright_yellow'))
-@click.option('--path', is_flag=True, default=False, help=style("Get the config file path.", fg='bright_yellow'))
-@click.option('--reset', is_flag=True, help=style("Reset all configurations.", fg='bright_yellow'))
-@click.option('--list', is_flag=True, help=style("List all app settings.", fg='bright_yellow'))
-@click.pass_context
-def config(ctx, token, location, unit_system, path, reset, list):
-    config = ctx.obj['CONFIGURATION']
+    log_parser = subparser.add_parser('log', help="read the log file")
+    log_parser.add_argument('--path', action='store_true', help="return the log file path")
+    log_parser.add_argument('--reset', action='store_true', help="purge the log file")
+    log_parser.add_argument('--read', action='store_true', help='read the log file')
 
-    if token:
-        config['Token'] = token
-        utils.write_resource('weather.data', 'config.json', config)
-    
-    if location:
-        config['Location'] = location
-        utils.write_resource('weather.data', 'config.json', config)
+    config_parser = subparser.add_parser('config', help="configure default application settings")
+    config_parser.add_argument('--token', nargs='?', type=validate_token, metavar="TOKEN", help="set OpenWeather API key")
+    config_parser.add_argument('--location', nargs='?', type=str, help="set a default location")
+    config_parser.add_argument('--unit-system', default=UnitSystem.SI, type=UnitSystem.from_string, choices=list(UnitSystem), help="set a default unit system")
+    config_parser.add_argument('--path', action='store_true', help="return the log file path")
+    config_parser.add_argument('--reset', action='store_true', help="purge the config file")
+    config_parser.add_argument('--list', action='store_true', help="list all user configuration")
 
-    if unit_system:
-        config['UnitSystem'] = unit_system.lower()
-        utils.write_resource('weather.data', 'config.json', config)
+    report_parser = subparser.add_parser('report', help="generate a new weather report")
+    report_parser.add_argument('--token', nargs='?', type=validate_token, metavar="TOKEN", help="set OpenWeather API key")
+    report_parser.add_argument('--location', nargs='?', type=str, help="set a default location")
+    report_parser.add_argument('--unit-system', default=UnitSystem.SI, type=UnitSystem.from_string, choices=list(UnitSystem), help="set a default unit system")
+    report_parser.add_argument('--hour', default=15, nargs='?', type=validate_hour, metavar='HOUR', help="set hour for tomorrow's forecast (defaults to 15)")
+    report_parser.add_argument('--mode', default=Mode.TODAY, type=Mode.from_string, choices=list(Mode), help="set new type of weather forecast (defaults to today)")
+    report_parser.add_argument('--save', default=False, action='store_true', help="save weather report (default)")
+    report_parser.add_argument('--no-save', dest='save', action='store_false', help="don't save weather report")
+    report_parser.add_argument('--path', action='store_true', help="return the save file path")
+    report_parser.add_argument('--reset', action='store_true', help="purge the save file")
+    report_parser.add_argument('--read', action='store_true', help="read the save file")
 
-    if path:
-        click.echo(utils.get_resource_path('weather.data', 'config.json'))
-        return
+    args = parser.parse_args()
+    config_data = utils.read_json_file(CONFIGFILE)
 
-    if reset:
-        utils.reset_resource('weather.data', 'config.json')
-        return
+    if args.command == 'log':
+        logfile = utils.get_resource_path(LOGFILE)
 
-    if list:
-        click.secho("\nApplication Settings", fg='bright_magenta')
-        utils.print_dict('Name', 'Value', config)
-        return
+        if args.path:
+            return logfile
+        if args.reset:
+            utils.reset_file(logfile)
+            return
+        if args.read:
+            with open(logfile, mode='r', encoding='utf-8') as file_handler:
+                log = file_handler.readlines()
 
-@cli.command(help=style("Generate a new weather report.", fg='bright_green'), context_settings=CONTEXT_SETTINGS)
-@click.option('--location', type=click.STRING, help=style("Configure weather report location.", fg='bright_yellow'))
-@click.option('--unit-system', type=click.Choice(UNITSYSTEM, case_sensitive=False), help=style("Set new unit system. Defaults to SI.", fg='bright_yellow'))
-@click.option('--mode', type=click.Choice([mode.value for mode in Mode], case_sensitive=False), default=Mode.Today.value, help=style("Set new type of weather forecast. Defaults to today.", fg='bright_yellow'))
-@click.option('--hour', type=Hour(), default=15, help=style("Set hour for tomorrow's forecast. Defaults to 15.", fg='bright_yellow'))
-@click.option('--save/--no-save', is_flag=True, default=False, help=style("Store results to disk.", fg='bright_yellow'))
-@click.option('--path', is_flag=True, default=False, help=style("Get the weather report path.", fg='bright_yellow'))
-@click.option('--reset', is_flag=True, help=style("Wipe out your weather report file.", fg='bright_yellow'))
-@click.option('--read', is_flag=True, default=False, help=style("Read your weather report file.", fg='bright_yellow'))
-@click.option('--verbose', is_flag=True, help=style("Enable verbose application output.", fg='bright_yellow'))
-@click.pass_context
-def report(ctx, location, unit_system, mode, hour, save, path, reset, read, verbose):
-    config = ctx.obj['CONFIGURATION']
-    weather_report_file = ctx.obj['WEATHER']
-    weather_report_path = utils.get_resource_path('weather.data', 'weather.json')
+                if not log:
+                    utils.print_on_warning("Nothing to read because the log file is empty")
+                    return
 
-    if path:
-        click.echo(weather_report_path)
-        return
+                parse = lambda line: line.strip('\n').split('::')
+                Entry = namedtuple('Entry', 'timestamp levelname lineno name message')
 
-    if reset:
-        utils.reset_resource('weather.data', 'weather.json')
-        return
+                tabulate = "{:<20} {:<5} {:<6} {:<14} {:<20}".format
 
-    if read:
-        pprint(weather_report_file, indent=2)
-        return
-    
-    try:
-        token = config['Token']
-        unit_system = unit_system or config.get('UnitSystem', 'SI')
-        location = location or config.get('Location', 'Tokyo, Japan')
-        core.formatted_weather_report(token, Mode(mode), location, unit_system, save, verbose, hour)
-    except KeyError as exception:
-        warning_message = f"Key Error: {exception}"
-        utils.print_on_warning(warning_message)
-        utils.logger.warning(warning_message)
-    except UnauthorizedError as exception:
-        error_message = f"{exception} (token={token})"
-        utils.print_on_error(error_message)
-        utils.logger.critical(error_message)
-    except Exception as exception:
-        utils.print_on_error("An unexpected error occurred. Please check the log file for more information.")
-        utils.logger.critical(exception)
+                print(f"{GREEN}{tabulate('Timestamp', 'Line', 'Level', 'File Name', 'Message')}{RESET_ALL}")
+
+                for line in log:
+                    entry = Entry(parse(line)[0], parse(line)[1], parse(line)[2], parse(line)[3], parse(line)[4])
+                    print(tabulate(entry.timestamp, entry.lineno.zfill(4), entry.levelname, entry.name, entry.message))
+
+    if args.command == 'config':
+        config_file = utils.get_resource_path(CONFIGFILE)
+
+        if args.token:
+            config_data['Token'] = args.token
+            utils.write_json_file(CONFIGFILE, config_data)
+        if args.location:
+            config_data['Location'] = args.location
+            utils.write_json_file(CONFIGFILE, config_data)
+        if args.unit_system:
+            config_data['UnitSystem'] = args.unit_system.name
+            utils.write_json_file(CONFIGFILE, config_data)
+        if args.path:
+            return config_file
+        if args.reset:
+            utils.reset_file(config_file)
+            return
+        if args.list and config_data:
+            utils.print_dict('Name', 'Value', config_data)
+            return
+
+    if args.command == 'report':
+        report_file = utils.get_resource_path(REPORTFILE)
+
+        try:
+            weather_report = core.WeatherReport(
+                args.token or config_data['Token'],
+                args.location or config_data['Location'],
+                args.unit_system.name or config_data['UnitSystem'],
+                args.mode,
+                args.hour
+            )
+
+            data = weather_report.build()
+
+            if args.verbose:
+                print(f"\n{BRIGHT}{MAGENTA}[ {RESET_ALL}Weather Report for {args.mode.value.capitalize()}{BRIGHT}{MAGENTA} ]{RESET_ALL}", sep='')
+                data['Date'] = data['Date'].strftime('%B %d, %Y (%I:%M %p)')
+                utils.print_dict('Name', 'Value', data)
+
+            if args.no_verbose:
+                print(f"{BRIGHT}{MAGENTA}[ {RESET_ALL}{data['Date'].strftime('%B %d @ %I:%M %p')}{BRIGHT}{MAGENTA} ]{RESET_ALL} {data['Temperature (Now)']} in {data['Location']}")
+
+            if args.save:
+                raise NotImplementedError()
+
+        except KeyError as key_error:
+            utils.print_on_error("Encountered an error while trying to access %s in the configuration file." % str(key_error))
+            utils.logger.error(str(key_error))
+        except UnauthorizedError as auth_error:
+            utils.print_on_error("Unauthorized access: OpenWeather denied servicing your request.")
+            utils.logger.error(str(auth_error))
+        except Exception as error:
+            utils.print_on_error("Something unexpected happend. The responsible authorities have already been notified.")
+            utils.logger.error(str(error))
+
+        if args.path:
+            return report_file
+        if args.reset:
+            utils.reset_file(report_file)
+            return
+        if args.read:
+            raise NotImplementedError()
