@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime as dt
 from datetime import timedelta, timezone
 from enum import Enum, unique
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import pyowm
 from pyowm.weatherapi25.observation import Observation
@@ -99,7 +99,7 @@ class WeatherReport(object):
             return weather_manager.forecast_at_place(self.location, '3h')
 
     @property
-    def datetime(self) -> int:
+    def datetime(self) -> dt:
         today = dt.today().astimezone(tz=timezone.utc)
         return today if self.mode == Mode.TODAY else today + timedelta(hours=12)
 
@@ -158,16 +158,36 @@ class WeatherReport(object):
         return "{:5.2F}m/s".format(speed) if unit_system == 'SI' else f"{speed}mph"
 
     def build(self) -> dict:
+        """
+        Return a dictionary with pre-formatted strings.
+        """
         padded_percentage = "{:5}%".format
         return {
             'Date': self.datetime,
             'Location': self.location,
-            'Temperature (Min)': WeatherReport.get_temperature_string(self.temperature_min, self.unit_system),
-            'Temperature (Now)': WeatherReport.get_temperature_string(self.temperature_now, self.unit_system),
-            'Temperature (Max)': WeatherReport.get_temperature_string(self.temperature_max, self.unit_system),
-            'Wind Speed': WeatherReport.get_wind_string(self.speed, self.unit_system),
+            'UnitSystem': self.unit_system,
+            'TemperatureMin': WeatherReport.get_temperature_string(self.temperature_min, self.unit_system),
+            'TemperatureNow': WeatherReport.get_temperature_string(self.temperature_now, self.unit_system),
+            'TemperatureMax': WeatherReport.get_temperature_string(self.temperature_max, self.unit_system),
+            'WindSpeed': WeatherReport.get_wind_string(self.speed, self.unit_system),
             'Humidity': padded_percentage(self.humidity),
-            'Cloud Coverage': padded_percentage(self.weather.clouds)
+            'CloudCoverage': padded_percentage(self.weather.clouds)
         }
+
+    def export(self) -> List[str]:
+        """
+        Return a list of data points fit for processing by other applications.
+        """
+        return list(map(str, [
+            self.datetime.timestamp(),
+            self.location,
+            self.unit_system,
+            self.temperature_min,
+            self.temperature_now,
+            self.temperature_max,
+            self.speed,
+            self.humidity,
+            self.cloud_coverage
+        ]))
 
 #endregion weather interface
