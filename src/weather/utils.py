@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import csv
 import json
 import logging
 import os
@@ -9,7 +10,7 @@ from collections import namedtuple
 from itertools import chain
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Union
+from typing import Dict, List, Union
 
 from . import config
 from .__init__ import package_name
@@ -71,6 +72,13 @@ def reset_file(filename: Union[str, Path]) -> None:
     open(get_resource_path(filename), mode='w', encoding='utf-8').close()
 
 
+def write_csv(filename: Union[str, Path], data: Dict[str, str]) -> None:
+    with open(filename, mode='a', encoding='utf-8') as file_handler:
+        writer = csv.DictWriter(file_handler, delimiter=',', lineterminator='\n', fieldnames=data.keys())
+        if os.stat(filename).st_size == 0:
+            writer.writeheader()
+        writer.writerow(data)
+
 #endregion misc
 
 #region terminal formatting
@@ -83,7 +91,7 @@ def print_dict(title_left: str, title_right: str, table: dict) -> None:
     table = {str(key): str(value) for key, value in table.items()}
     invert = lambda x: -x + (1 + len(max(chain(table.keys(), [title_left]), key=len)) // 8)
     tabs = lambda string: invert(len(string) // 8) * '\t'
-    print(f"{GREEN}{title_left}{tabs(title_left)}{title_right}{RESET_ALL}")
+    print(f"{BRIGHT}{GREEN}{title_left}{tabs(title_left)}{title_right}{RESET_ALL}")
     print(f"{len(title_left) * '-'}{tabs(title_left)}{len(title_right) * '-'}")
     for key, value in table.items():
         print(f"{key}{tabs(key)}{value}")
