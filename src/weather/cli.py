@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
 import re
 from collections import namedtuple
 from typing import Optional
@@ -12,9 +13,6 @@ from .__init__ import __version__, package_name
 from .config import (BRIGHT, CONFIGFILE, GREEN, LOGFILE, MAGENTA, REPORTFILE,
                      RESET_ALL)
 from .core import Mode, UnitSystem
-
-# NOTE: 70c5577aa5cf8ce1dfb082e685e49944
-# NOTE: https://gist.github.com/mikecharles/9ed3082b10d77d658743
 
 #region argparse pseudo type checking
 
@@ -34,13 +32,12 @@ def validate_hour(hour: str) -> Optional[str]:
     else:
         return int(hour)
 
-#endregion
+#endregion argparse pseudo type checking
 
 def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version=f"%(prog)s {__version__}")
     parser.add_argument('--verbose', default=False, action='store_true', help="increase output verbosity")
-    parser.add_argument('--no-verbose', dest='verbose', action='store_false', help="run commands silently")
 
     subparser = parser.add_subparsers(dest='command')
 
@@ -83,6 +80,7 @@ def cli():
         if args.read:
             with open(logfile, mode='r', encoding='utf-8') as file_handler:
                 log = file_handler.readlines()
+                print()
 
                 if not log:
                     utils.print_on_warning("Nothing to read because the log file is empty")
@@ -98,6 +96,9 @@ def cli():
                 for line in log:
                     entry = Entry(parse(line)[0], parse(line)[1], parse(line)[2], parse(line)[3], parse(line)[4])
                     print(tabulate(entry.timestamp, entry.lineno.zfill(4), entry.levelname, entry.name, entry.message))
+
+
+                print()
 
     if args.command == 'config':
         config_file = utils.get_resource_path(CONFIGFILE)
@@ -123,6 +124,22 @@ def cli():
     if args.command == 'report':
         report_file = utils.get_resource_path(REPORTFILE)
 
+        if args.path:
+            return report_file
+        if args.reset:
+            utils.reset_file(report_file)
+            return
+        if args.read:
+            print()
+            with open(report_file, mode='r', encoding='utf-8') as file_handler:
+                reader = csv.DictReader(file_handler)
+                tabulate = "{:<19}{:<10}{:<12}{:<16}{:<16}{:<16}{:<11}{:<10}{:<12}".format
+                print(BRIGHT + GREEN + tabulate(*reader.fieldnames) + RESET_ALL)
+                for row in list(reader):
+                    print(tabulate(*row.values()))
+            print()
+            return
+
         try:
             weather_report = core.WeatherReport(
                 args.token or config_data['Token'],
@@ -139,12 +156,14 @@ def cli():
                 data['Date'] = data['Date'].strftime('%B %d, %Y (%I:%M %p)')
                 utils.print_dict('Name', 'Value', data)
 
-            if args.no_verbose:
-                print(f"{BRIGHT}{MAGENTA}[ {RESET_ALL}{data['Date'].strftime('%B %d @ %I:%M %p')}{BRIGHT}{MAGENTA} ]{RESET_ALL} {data['Temperature (Now)']} in {data['Location']}")
+            if not args.verbose:
+                print(f"{BRIGHT}{MAGENTA}[ {RESET_ALL}{data['Date'].strftime('%B %d @ %I:%M %p')}{BRIGHT}{MAGENTA} ]{RESET_ALL} {data['TemperatureNow']} in {data['Location']}")
 
             if args.save:
-                #TODO: convert JSON data to CSV for export
-                raise NotImplementedError()
+                datadict = dict(zip(data.keys(), weather_report.export()))
+                utils.write_csv(report_file, datadict)
+                return
+
 
         except KeyError as key_error:
             utils.print_on_error("Encountered an error while trying to access %s in the configuration file." % str(key_error))
@@ -155,11 +174,3 @@ def cli():
         except Exception as error:
             utils.print_on_error("Something unexpected happend. The responsible authorities have already been notified.")
             utils.logger.error(str(error))
-
-        if args.path:
-            return report_file
-        if args.reset:
-            utils.reset_file(report_file)
-            return
-        if args.read:
-            raise NotImplementedError()
