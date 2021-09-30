@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.0.0 - Major Rewrite (30 September 2021)
+
+Complete rewrite of the application. This version changes the configuration path
+and drops almost all external dependencies. While it preserves feature parity with
+the previous version, a few new features have been added. The `--save` flag now
+uses a CSV file which should be much easier to parse.
+
 ## Version 1.2.4 - Improve Log Utilities (01 March 2021)
 
 Makes the `weather log --read` terminal output prettier using rich tables and

@@ -8,7 +8,7 @@
 
 <p align="center">
     <a href="https://github.com/hentai-chan/weather" title="Release Version">
-        <img src="https://img.shields.io/badge/Release-1.2.4%20-blue">
+        <img src="https://img.shields.io/badge/Release-2.0.0%20-blue">
     </a>
     <a title="Supported Python Versions">
         <img src="https://img.shields.io/badge/Python-3.8%20-blue">
@@ -21,8 +21,9 @@
     </a>
 </p>
 
-Weather is a modern terminal application for reading weather forecasts by harvesting
-the OpenWeather API and features rich configuration options.
+Weather is a small but slick Python application for reading weather forecasts
+from the comfort of your terminal by harvesting the OpenWeather API and features
+rich configuration options.
 
 ## Preview
 
@@ -38,7 +39,7 @@ Click on this image to watch a live demo on YouTube.
 
 Follow along the setup guide below to install and configure this terminal
 application. Using an virtual environment is optional, but recommended. See also
-`requirements.txt` to examine the dependency graph.
+`requirements/*.txt` to examine the dependency graph.
 
 <details>
 <summary>Installation</summary>
@@ -72,19 +73,19 @@ Register a new account on <https://openweathermap.org/> to get your API token.
 **Mandatory:** Enter token:
 
 ```cli
-weather config --token=<token>
+weather config --token <token>
 ```
 
 **Optional:** Set your default unit system (either `si` or `imperial`):
 
 ```cli
-weather config --unit-system=<system>
+weather config --unit-system <system>
 ```
 
 **Optional:** Set your default location as toponym (e.g. `Rome` or `New York, USA`):
 
 ```cli
-weather config --location=<toponym>
+weather config --location <toponym>
 ```
 
 **Optional:** Review your submissions:
@@ -109,7 +110,7 @@ weather config --reset
 Get today's verbose weather forecast using default settings:
 
 ```cli
-weather report --verbose
+weather --verbose report
 ```
 
 Get today's weather forecast for `New York, USA` in imperial units:
@@ -127,7 +128,7 @@ weather report --save
 Get tomorrow's weather forecast for 12PM:
 
 ```cli
-weather report --mode=tomorrow --hour=12
+weather report --mode tomorrow --hour 12
 ```
 
 View the help page for this command:
