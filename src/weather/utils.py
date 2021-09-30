@@ -91,10 +91,10 @@ def print_dict(title_left: str, title_right: str, table: dict) -> None:
     table = {str(key): str(value) for key, value in table.items()}
     invert = lambda x: -x + (1 + len(max(chain(table.keys(), [title_left]), key=len)) // 8)
     tabs = lambda string: invert(len(string) // 8) * '\t'
-    print(f"{BRIGHT}{GREEN}{title_left}{tabs(title_left)}{title_right}{RESET_ALL}")
-    print(f"{len(title_left) * '-'}{tabs(title_left)}{len(title_right) * '-'}")
+    print(BRIGHT + GREEN + title_left + tabs(title_left) + title_right + RESET_ALL)
+    print((len(title_left) * '-') + tabs(title_left) + (len(title_right) * '-'))
     for key, value in table.items():
-        print(f"{key}{tabs(key)}{value}")
+        print(key + tabs(key) + value)
     print()
 
 def print_on_success(message: str, verbose: bool=True) -> None:

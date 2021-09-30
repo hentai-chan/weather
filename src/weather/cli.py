@@ -80,7 +80,6 @@ def cli():
         if args.read:
             with open(logfile, mode='r', encoding='utf-8') as file_handler:
                 log = file_handler.readlines()
-                print()
 
                 if not log:
                     utils.print_on_warning("Nothing to read because the log file is empty")
@@ -91,12 +90,11 @@ def cli():
 
                 tabulate = "{:<20} {:<5} {:<6} {:<14} {:<20}".format
 
-                print(f"{GREEN}{tabulate('Timestamp', 'Line', 'Level', 'File Name', 'Message')}{RESET_ALL}")
+                print('\n' + GREEN + tabulate('Timestamp', 'Line', 'Level', 'File Name', 'Message') + RESET_ALL)
 
                 for line in log:
                     entry = Entry(parse(line)[0], parse(line)[1], parse(line)[2], parse(line)[3], parse(line)[4])
                     print(tabulate(entry.timestamp, entry.lineno.zfill(4), entry.levelname, entry.name, entry.message))
-
 
                 print()
 
@@ -160,10 +158,8 @@ def cli():
                 print(f"{BRIGHT}{MAGENTA}[ {RESET_ALL}{data['Date'].strftime('%B %d @ %I:%M %p')}{BRIGHT}{MAGENTA} ]{RESET_ALL} {data['TemperatureNow']} in {data['Location']}")
 
             if args.save:
-                datadict = dict(zip(data.keys(), weather_report.export()))
-                utils.write_csv(report_file, datadict)
+                utils.write_csv(report_file, dict(zip(data.keys(), weather_report.export())))
                 return
-
 
         except KeyError as key_error:
             utils.print_on_error("Encountered an error while trying to access %s in the configuration file." % str(key_error))
