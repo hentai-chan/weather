@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.0.1 - Minor Changes (04 October 2021)
+
+For the sake of consistency in the command line interface, previously called `--read`
+options have been renamed to `--list`. The workflow file now runs on a weekly schedule
+to help me spot errors sooner as well.
+
 ## Version 2.0.0 - Major Rewrite (30 September 2021)
 
 Complete rewrite of the application. This version changes the configuration path
