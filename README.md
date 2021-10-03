@@ -8,7 +8,7 @@
 
 <p align="center">
     <a href="https://github.com/hentai-chan/weather" title="Release Version">
-        <img src="https://img.shields.io/badge/Release-2.0.0%20-blue">
+        <img src="https://img.shields.io/badge/Release-2.0.1%20-blue">
     </a>
     <a title="Supported Python Versions">
         <img src="https://img.shields.io/badge/Python-3.8%20-blue">
@@ -144,7 +144,7 @@ weather report --help
 Did something went wrong? Copy and paste the information from
 
 ```cli
-weather log --read
+weather log --list
 ```
 
 to file a new bug report.
