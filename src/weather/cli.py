@@ -44,7 +44,7 @@ def cli():
     log_parser = subparser.add_parser('log', help="read the log file")
     log_parser.add_argument('--path', action='store_true', help="return the log file path")
     log_parser.add_argument('--reset', action='store_true', help="purge the log file")
-    log_parser.add_argument('--read', action='store_true', help='read the log file')
+    log_parser.add_argument('--list', action='store_true', help='read the log file')
 
     config_parser = subparser.add_parser('config', help="configure default application settings")
     config_parser.add_argument('--token', nargs='?', type=validate_token, metavar="TOKEN", help="set OpenWeather API key")
@@ -64,7 +64,7 @@ def cli():
     report_parser.add_argument('--no-save', dest='save', action='store_false', help="don't save weather report")
     report_parser.add_argument('--path', action='store_true', help="return the save file path")
     report_parser.add_argument('--reset', action='store_true', help="purge the save file")
-    report_parser.add_argument('--read', action='store_true', help="read the save file")
+    report_parser.add_argument('--list', action='store_true', help="read the save file")
 
     args = parser.parse_args()
     config_data = utils.read_json_file(CONFIGFILE)
@@ -77,7 +77,7 @@ def cli():
         if args.reset:
             utils.reset_file(logfile)
             return
-        if args.read:
+        if args.list:
             with open(logfile, mode='r', encoding='utf-8') as file_handler:
                 log = file_handler.readlines()
 
@@ -127,7 +127,7 @@ def cli():
         if args.reset:
             utils.reset_file(report_file)
             return
-        if args.read:
+        if args.list:
             print()
             with open(report_file, mode='r', encoding='utf-8') as file_handler:
                 reader = csv.DictReader(file_handler)
